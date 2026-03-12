@@ -1,0 +1,87 @@
+version: '3.9'
+
+services:
+  # ── MongoDB ─────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7.0
+    container_name: nexus-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: nexus-ai
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - nexus-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend ──────────────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: nexus-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/nexus-ai
+      - JWT_SECRET=nexus_ai_super_secret_key_2024
+      - JWT_EXPIRES_IN=7d
+      - ML_SERVICE_URL=http://ml-service:8000
+      - FRONTEND_URL=http://localhost:3000
+      - NODE_ENV=production
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - nexus-network
+
+  # ── ML Service ───────────────────────────────────────────────────
+  ml-service:
+    build:
+      context: ./ml-services
+      dockerfile: Dockerfile
+    container_name: nexus-ml
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    volumes:
+      - ml_models:/app/models
+    networks:
+      - nexus-network
+
+  # ── Frontend ─────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=http://localhost:5000/api
+        - REACT_APP_GOOGLE_CLIENT_ID=your_google_client_id
+    container_name: nexus-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - nexus-network
+
+volumes:
+  mongo_data:
+  ml_models:
+
+networks:
+  nexus-network:
+    driver: bridge

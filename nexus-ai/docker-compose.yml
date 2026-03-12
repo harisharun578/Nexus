@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: nexus-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - nexus-network
+
+  backend:
+    build: ./backend
+    container_name: nexus-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/nexus-ai
+      - JWT_SECRET=nexus_ai_super_secret_2024
+      - ML_SERVICE_URL=http://ml-service:8000
+      - FRONTEND_URL=http://localhost:3000
+    depends_on:
+      - mongodb
+    volumes:
+      - ./backend/uploads:/app/uploads
+    networks:
+      - nexus-network
+
+  ml-service:
+    build: ./ml-services
+    container_name: nexus-ml
+    restart: always
+    ports:
+      - "8000:8000"
+    networks:
+      - nexus-network
+
+  frontend:
+    build: ./frontend
+    container_name: nexus-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - nexus-network
+
+volumes:
+  mongo_data:
+
+networks:
+  nexus-network:
+    driver: bridge

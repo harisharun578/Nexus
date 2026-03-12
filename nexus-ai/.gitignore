@@ -1,0 +1,15 @@
+node_modules/
+.env
+*.env.local
+build/
+dist/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+ml-services/models/*.pkl
+backend/uploads/*
+!backend/uploads/.gitkeep
+.DS_Store
+*.log

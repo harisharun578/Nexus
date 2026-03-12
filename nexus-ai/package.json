@@ -1,0 +1,17 @@
+{
+  "name": "nexus-ai-workplace-os",
+  "version": "2.0.0",
+  "description": "NEXUS AI — Enterprise Workplace OS with Biometric Auth, AI Copilot, ML Analytics",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm start",
+    "dev:ml": "cd ml-services && uvicorn main:app --host 0.0.0.0 --port 8000 --reload",
+    "seed": "cd database/seeds && node seedData.js",
+    "docker:up": "docker-compose up --build",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": ["ai","workplace","biometric","face-recognition","react","nodejs","python","ml"],
+  "author": "NEXUS AI Team",
+  "license": "MIT"
+}
