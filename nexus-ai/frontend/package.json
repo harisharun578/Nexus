@@ -2,6 +2,13 @@
   "name": "nexus-ai-workplace-os",
   "version": "2.0.0",
   "private": true,
+
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
+
   "dependencies": {
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.6.2",
@@ -19,13 +26,23 @@
     "date-fns": "^2.30.0",
     "react-webcam": "^7.2.0"
   },
+
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build"
   },
+
   "browserslist": {
-    "production": [">0.2%","not dead","not op_mini all"],
-    "development": ["last 1 chrome version","last 1 firefox version"]
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version"
+    ]
   },
+
   "proxy": "http://localhost:5000"
 }
